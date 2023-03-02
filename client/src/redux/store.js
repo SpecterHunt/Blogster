@@ -2,7 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { reducer as reduxForm } from "redux-form";
 import thunk from "redux-thunk";
 import authReducer from "./reducers/authReducer";
-import blogsReducer from "./reducers/blogsReducer";
+import blogsReducer from "./reducers/blogsReducer.js";
 
 const rootReducer = combineReducers({
   auth: authReducer,
