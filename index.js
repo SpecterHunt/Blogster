@@ -8,6 +8,7 @@ const keys = require("./config/keys");
 require("./models/User");
 require("./models/Blog");
 require("./services/passport");
+require("./services/cache");
 
 mongoose.connect(keys.mongoURI);
 const db = mongoose.connection;
