@@ -1,22 +1,24 @@
-const puppeteer = require("puppeteer");
-const sessionFactory = require("./factories/sessionFactory");
-const userFactory = require("./factories/userFactory");
+// const puppeteer = require("puppeteer");
+const Page = require("./helpers/page");
 
-let browser, page;
+let page;
 beforeEach(async () => {
-  browser = await puppeteer.launch({
-    headless: false,
-  });
-  page = await browser.newPage();
+  // below code is moved to wrqpper CustomPage class in helpers/page.js
+  //   browser = await puppeteer.launch({
+  //     headless: false,
+  //   });
+  //   page = await browser.newPage();
+
+  page = await Page.build();
   await page.goto("http://localhost:3000");
 });
 
 afterEach(async () => {
-  await browser.close();
+  await page.close();
 });
 
 test("The header has the correct text", async () => {
-  const text = await page.$eval("a.brand-logo", (el) => el.innerHTML);
+  const text = await page.getContentsOf("a.brand-logo");
   expect(text).toEqual("Blogster");
 });
 
@@ -27,17 +29,7 @@ test("clicking login starts oauth flow", async () => {
 });
 
 test("when signed in shows logout button", async () => {
-  //   const id = "63dcbc6e57c2555c61d610d8";
-
-  const user = await userFactory();
-  const { session, sig } = sessionFactory(user);
-
-  await page.setCookie({ name: "session", value: session });
-  await page.setCookie({ name: "session.sig", value: sig });
-  await page.goto("http://localhost:3000");
-  // if our test fails it will fail on the below line, because it will keep on waiting for the logout button to appear
-  await page.waitForSelector('a[href="/auth/logout"]'); // to slow down the execution of our test to make sure user is signed in and this button is rendered
-
-  const text = await page.$eval('a[href="/auth/logout"]', (el) => el.innerHTML);
+  await page.login();
+  const text = await page.getContentsOf('a[href="/auth/logout"]');
   expect(text).toEqual("Logout");
 });
